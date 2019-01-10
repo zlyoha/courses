@@ -1,7 +1,6 @@
 import json
 
 filename = 'orders.json'
-global_indent = 4
 
 
 def write_order_to_json(item, quantity, price, buyer, date):
@@ -13,7 +12,7 @@ def write_order_to_json(item, quantity, price, buyer, date):
         "Date": date
     }
     with open(filename, 'w') as f_n:
-        json.dump(dict_to_json, f_n, sort_keys=True, indent=global_indent)
+        json.dump(dict_to_json, f_n, sort_keys=True, indent=4)
 
 
 if __name__ == '__main__':
