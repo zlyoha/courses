@@ -33,6 +33,34 @@ port — tcp-порт на сервере, по умолчанию 7777.
 “action”: “leave” — покинуть чат.
 
 """
+import argparse
+import json
+from socket import *
+
+max_clients = 10
+
+
+def get_params():
+    parser = argparse.ArgumentParser()
+    parser.add_argument('-p', '--port', default=7777, help='port to listen')
+    parser.add_argument('-a', '--address', default='0.0.0.0', help='listening address')
+    params = parser.parse_args(sys.argv[1:])
+    return params
+
+
+def start_server():
+    params = get_params()
+    server_socket = socket(AF_INET, SOCK_STREAM)
+    server_socket.bind((params.address, params.port))
+    server_socket.listen(max_clients)
+
+    while True:
+        client, addr = server_socket.accept()
+        data = client.recv(1000000)
+        print('Сообщение: ', json.loads(data.decode('utf-8')), ', было отправлено клиентом: ', addr)
+        response = prepare_response()
+        client.send(response.encode('utf-8'))
+        client.close()
 
 
 def get_from_client():
@@ -40,18 +68,13 @@ def get_from_client():
 
 
 def prepare_response():
-    pass
+    return 'Привет, клиент'
 
 
 def send_to_client():
     pass
 
 
-# -p port, default 7777
-# -a addr
-def main():
-    pass
-
-
-if __name__ == '__name__':
-    main()
+if __name__ == '__main__':
+    print(get_params())
+    start_server()
