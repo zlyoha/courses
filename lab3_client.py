@@ -2,9 +2,18 @@
 # Согласно PEP8 "import *" рекомендуют не использовать, а указывать явно, доводить до такого вида или не паранойить?
 import argparse
 import json
+import time
 from socket import socket, AF_INET, SOCK_STREAM
 
-message = 'Привет, сервер!'
+#message_text = 'Привет, сервер!'
+data = {
+    "action": "presence",
+    "time": time.time(),
+    "type": "status",
+    "user": {
+        "status": "online"
+    }
+}
 
 
 def get_params():
@@ -21,12 +30,12 @@ def presence():
 
 
 # msg = { "msg": 'Привет, сервер, как дела?'}
-def send_to_server(msg):
+def send_to_server(data_to_send):
     params = get_params()
     print(params.address, params.port)
     with socket(AF_INET, SOCK_STREAM) as client_socket:
         client_socket.connect((params.address, params.port))  # Соединиться с сервером
-        client_socket.send(json.dumps(msg).encode('utf-8'))
+        client_socket.send(json.dumps(data_to_send).encode('utf-8'))
         data = client_socket.recv(1000000)
         print('Сообщение от сервера: ', data.decode('utf-8'), ', длиной ', len(data), ' байт')
 
@@ -35,9 +44,9 @@ def get_from_server():
     pass
 
 
-def handle_input():
+def handle_response():
     pass
 
 
 if __name__ == '__main__':
-    send_to_server({'action': 'Привет, сервер!'})
+    send_to_server(data)

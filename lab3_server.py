@@ -35,6 +35,7 @@ port — tcp-порт на сервере, по умолчанию 7777.
 """
 import argparse
 import json
+import time
 from socket import *
 
 max_clients = 10
@@ -44,7 +45,7 @@ def get_params():
     parser = argparse.ArgumentParser()
     parser.add_argument('-p', '--port', default=7777, help='port to listen')
     parser.add_argument('-a', '--address', default='0.0.0.0', help='listening address')
-    params = parser.parse_args(sys.argv[1:])
+    params = parser.parse_args()
     return params
 
 
@@ -56,19 +57,29 @@ def start_server():
 
     while True:
         client, addr = server_socket.accept()
-        data = client.recv(1000000)
-        print('Сообщение: ', json.loads(data.decode('utf-8')), ', было отправлено клиентом: ', addr)
-        response = prepare_response()
-        client.send(response.encode('utf-8'))
+        request = data_to_dict(client.recv(1000000))
+        print('Сообщение: ', request, ', было отправлено клиентом: ', addr)
+        response = prepare_response(addr)
+        client.send(response)
         client.close()
 
 
-def get_from_client():
-    pass
+def data_to_dict(encoded_data):
+    return json.loads(encoded_data.decode('utf-8'))
 
 
-def prepare_response():
-    return 'Привет, клиент'
+def dict_to_data(decoded_data):
+    return json.dumps(decoded_data).encode('utf-8')
+
+
+def prepare_response(username):
+    data = {
+        "action": "msg",
+        "time": time.time(),
+        "type": "status",
+        "message": "Hello {%s}" % str(username)
+    }
+    return dict_to_data(data)
 
 
 def send_to_client():
