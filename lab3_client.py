@@ -5,7 +5,7 @@ import json
 import time
 from socket import socket, AF_INET, SOCK_STREAM
 
-#message_text = 'Привет, сервер!'
+# message_text = 'Привет, сервер!'
 data = {
     "action": "presence",
     "time": time.time(),
