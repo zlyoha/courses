@@ -25,10 +25,6 @@ def get_params():
     return params
 
 
-def presence():
-    pass
-
-
 # msg = { "msg": 'Привет, сервер, как дела?'}
 def send_to_server(data_to_send):
     params = get_params()
@@ -36,16 +32,8 @@ def send_to_server(data_to_send):
     with socket(AF_INET, SOCK_STREAM) as client_socket:
         client_socket.connect((params.address, params.port))  # Соединиться с сервером
         client_socket.send(json.dumps(data_to_send).encode('utf-8'))
-        data = client_socket.recv(1000000)
-        print('Сообщение от сервера: ', data.decode('utf-8'), ', длиной ', len(data), ' байт')
-
-
-def get_from_server():
-    pass
-
-
-def handle_response():
-    pass
+        server_response = client_socket.recv(1000000)
+        print('Сообщение от сервера: ', server_response.decode('utf-8'), ', длиной ', len(data), ' байт')
 
 
 if __name__ == '__main__':
