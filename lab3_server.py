@@ -38,8 +38,6 @@ import json
 import time
 from socket import *
 
-max_clients = 10
-
 
 def get_params():
     parser = argparse.ArgumentParser()
@@ -49,11 +47,11 @@ def get_params():
     return params
 
 
-def start_server():
+def server_loop():
     params = get_params()
     server_socket = socket(AF_INET, SOCK_STREAM)
     server_socket.bind((params.address, params.port))
-    server_socket.listen(max_clients)
+    server_socket.listen(5)
 
     while True:
         client, addr = server_socket.accept()
@@ -77,15 +75,12 @@ def prepare_response(username):
         "action": "msg",
         "time": time.time(),
         "type": "status",
-        "message": "Hello {%s}" % str(username)
+        "message": "Hello %s" % str(username[0])
     }
+    print(type(dict_to_data(data)))
     return dict_to_data(data)
-
-
-def send_to_client():
-    pass
 
 
 if __name__ == '__main__':
     print(get_params())
-    start_server()
+    server_loop()

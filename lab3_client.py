@@ -21,19 +21,21 @@ def get_params():
     parser.add_argument('address', nargs='?', default='localhost', help='server address')
     parser.add_argument('port', nargs='?', default=7777, help='server port')
     params = parser.parse_args()
-    print(params)
+    #print(params)
     return params
 
 
 # msg = { "msg": 'Привет, сервер, как дела?'}
 def send_to_server(data_to_send):
     params = get_params()
-    print(params.address, params.port)
+    #print(params.address, params.port)
     with socket(AF_INET, SOCK_STREAM) as client_socket:
         client_socket.connect((params.address, params.port))  # Соединиться с сервером
         client_socket.send(json.dumps(data_to_send).encode('utf-8'))
         server_response = client_socket.recv(1000000)
-        print('Сообщение от сервера: ', server_response.decode('utf-8'), ', длиной ', len(data), ' байт')
+        server_response_decoded = json.loads(server_response.decode('utf-8'))
+        print('Сообщение от сервера: ', server_response_decoded, ', длиной ', len(data), ' байт')
+    return server_response_decoded
 
 
 if __name__ == '__main__':
