@@ -38,6 +38,11 @@ import json
 import time
 from socket import *
 
+import log.server_log_config
+
+logger = log.server_log_config.config_logger()
+
+
 
 def get_params():
     parser = argparse.ArgumentParser()
@@ -56,7 +61,8 @@ def server_loop():
     while True:
         client, addr = server_socket.accept()
         request = data_to_dict(client.recv(1000000))
-        print('Сообщение: ', request, ', было отправлено клиентом: ', addr)
+        # print('Сообщение: ', request, ', было отправлено клиентом: ', addr)
+        logger.info('Сообщение: %s было отправлено клиентом: %s', request, addr)
         response = prepare_response(addr)
         client.send(response)
         client.close()
@@ -77,10 +83,9 @@ def prepare_response(username):
         "type": "status",
         "message": "Hello %s" % str(username[0])
     }
-    print(type(dict_to_data(data)))
+    logger.debug("check type of response: %s", type(dict_to_data(data)))
     return dict_to_data(data)
 
 
 if __name__ == '__main__':
-    print(get_params())
     server_loop()
