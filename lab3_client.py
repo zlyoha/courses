@@ -5,9 +5,9 @@ import json
 import time
 from socket import socket, AF_INET, SOCK_STREAM
 
-import log.client_log_config
+import logs.client_log_config
 
-logger = log.client_log_config.config_logger()
+logger = logs.client_log_config.config_logger()
 
 # message_text = 'Привет, сервер!'
 data = {

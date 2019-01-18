@@ -38,12 +38,13 @@ import json
 import time
 from socket import *
 
-import log.server_log_config
+import logs.server_log_config
+from logs.log_decorator import log
 
-logger = log.server_log_config.config_logger()
+logger = logs.server_log_config.config_logger()
 
 
-
+@log
 def get_params():
     parser = argparse.ArgumentParser()
     parser.add_argument('-p', '--port', default=7777, help='port to listen')
@@ -72,16 +73,18 @@ def data_to_dict(encoded_data):
     return json.loads(encoded_data.decode('utf-8'))
 
 
+@log
 def dict_to_data(decoded_data):
     return json.dumps(decoded_data).encode('utf-8')
 
 
-def prepare_response(username):
+@log
+def prepare_response(user_message):
     data = {
         "action": "msg",
         "time": time.time(),
         "type": "status",
-        "message": "Hello %s" % str(username[0])
+        "message": "Hello %s" % str(user_message[0])
     }
     logger.debug("check type of response: %s", type(dict_to_data(data)))
     return dict_to_data(data)
