@@ -4,6 +4,7 @@ import argparse
 import json
 import time
 from socket import socket, AF_INET, SOCK_STREAM
+import random
 
 import logs.client_log_config
 
@@ -15,6 +16,7 @@ data = {
     "time": time.time(),
     "type": "status",
     "user": {
+        "username": f"user{str(random.randint(0, 1000))}",
         "status": "online"
     }
 }
@@ -29,7 +31,6 @@ def get_params():
     return params
 
 
-# msg = { "msg": 'Привет, сервер, как дела?'}
 def send_to_server(data_to_send):
     params = get_params()
     # print(params.address, params.port)
@@ -42,10 +43,25 @@ def send_to_server(data_to_send):
         client_socket.send(json.dumps(data_to_send).encode('utf-8'))
         server_response = client_socket.recv(1000000)
         server_response_decoded = json.loads(server_response.decode('utf-8'))
-        # print('Сообщение от сервера: ', server_response_decoded, ', длиной ', len(data), ' байт')
+        print('Сообщение от сервера: ', server_response_decoded, ', длиной ', len(data), ' байт')
         logger.info('Сообщение от сервера: %s, длиной %d байт', server_response_decoded, len(data))
     return server_response_decoded
 
 
-if __name__ == '__main__':
+def send_to_chat(message, chat_name):
+    data["message"] = message
+    data["to"] = chat_name
+    data["action"] = "chatmsg"
+    # data["userlist"] = ["myname1"]
+    # data["userlist"].append("myname")
+    print(data)
+    pass
+
+
+def main():
+    send_to_chat("hello world", "testchat")
     send_to_server(data)
+
+
+if __name__ == '__main__':
+    main()

@@ -43,6 +43,27 @@ from logs.log_decorator import log
 
 logger = logs.server_log_config.config_logger()
 
+chats_users = {"chatname": ["username"]}
+
+# I know problem about wrong time, that only init on start
+data = {
+    "action": "msg",
+    "time": time.time(),
+    "chatname": "default",
+    "from": "server",
+    "message": "Hello"
+}
+
+
+def add_to_chat(chatname, username):
+    try:
+        if username not in chats_users["chatname"]:
+            chats_users["chatname"].append(username)
+            logger.info(f'User {username} added to chat {chatname}')
+    except KeyError:
+        logger.info(f'User {username} created chat {chatname}')
+        chats_users["chatname"] = [username]
+
 
 @log
 def get_params():
@@ -58,15 +79,20 @@ def server_loop():
     server_socket = socket(AF_INET, SOCK_STREAM)
     server_socket.bind((params.address, params.port))
     server_socket.listen(5)
-
-    while True:
-        client, addr = server_socket.accept()
-        request = data_to_dict(client.recv(1000000))
-        # print('Сообщение: ', request, ', было отправлено клиентом: ', addr)
-        logger.info('Сообщение: %s было отправлено клиентом: %s', request, addr)
-        response = prepare_response(addr)
-        client.send(response)
-        client.close()
+    try:
+        while True:
+            client, addr = server_socket.accept()
+            request = data_to_dict(client.recv(1000000))
+            # print('Сообщение: ', request, ', было отправлено клиентом: ', addr)
+            logger.info('Сообщение: %s было отправлено клиентом: %s', request, addr)
+            response = prepare_response(request)
+            client.send(response)
+            logger.info("request: %s %s %s", request["action"], request["to"], request["user"]["username"])
+            if request["action"] == "chatmsg":
+                add_to_chat(request["to"], request["user"]["username"])
+            client.close()
+    except KeyboardInterrupt:
+        logger.warning("Server will be shutdown")
 
 
 def data_to_dict(encoded_data):
@@ -80,14 +106,10 @@ def dict_to_data(decoded_data):
 
 @log
 def prepare_response(user_message):
-    data = {
-        "action": "msg",
-        "time": time.time(),
-        "type": "status",
-        "message": "Hello %s" % str(user_message[0])
-    }
-    logger.debug("check type of response: %s", type(dict_to_data(data)))
-    return dict_to_data(data)
+    data["message"] = f"Hello {user_message['user']['username']}"
+    response = dict_to_data(data)
+    logger.debug("check type of response: %s", type(response))
+    return response
 
 
 if __name__ == '__main__':
