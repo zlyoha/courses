@@ -18,18 +18,18 @@ from logging.handlers import TimedRotatingFileHandler
 
 
 def config_logger():
-    logfile = 'log/server.log'
+    logfile = 'logs/server.log'
     logging.basicConfig(
         filename=logfile,
         format='%(asctime)s %(levelname)s %(module)s %(message)s',
         level=logging.DEBUG)
 
     log = logging.getLogger('server_log')
-    rotator = logging.getLogger('rotating log')
+    rotator = logging.getLogger('rotating logs')
     rotate_handler = TimedRotatingFileHandler(logfile, when='D', interval=1)
 
-    # I get double messaging in log if use
-    # log.addHandler(rotate_handler)
+    # I get double messaging in logs if use
+    # logs.addHandler(rotate_handler)
     rotator.addHandler(rotate_handler)
 
     return log

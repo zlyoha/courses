@@ -2,7 +2,7 @@ import logging
 
 
 def config_logger():
-    logfile = 'log/client.log'
+    logfile = 'logs/client.log'
     logging.basicConfig(
         filename=logfile,
         format='%(asctime)s %(levelname)s %(module)s %(message)s',
