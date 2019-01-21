@@ -23,8 +23,9 @@ def config_logger():
         filename=logfile,
         format='%(asctime)s %(levelname)s %(module)s %(message)s',
         level=logging.DEBUG)
-
+    sh = logging.StreamHandler()
     log = logging.getLogger('server_log')
+    log.addHandler(sh)
     rotator = logging.getLogger('rotating logs')
     rotate_handler = TimedRotatingFileHandler(logfile, when='D', interval=1)
 
